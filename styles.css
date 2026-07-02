@@ -42,7 +42,7 @@ button {
   min-height: 100vh;
   margin: 0 auto;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 50% 0%, rgba(231, 214, 146, 0.18), transparent 32%),
     radial-gradient(circle at 100% 45%, rgba(249, 114, 114, 0.1), transparent 30%),
@@ -52,6 +52,13 @@ button {
 .screen {
   min-height: 100vh;
   padding: calc(18px + env(safe-area-inset-top)) 25px calc(104px + env(safe-area-inset-bottom));
+}
+
+.app-bg {
+  background:
+    linear-gradient(rgba(14, 14, 14, 0.88), rgba(14, 14, 14, 0.94)),
+    url("./design-assets/Content.svg") center top / 780px auto repeat-y,
+    #0e0e0e;
 }
 
 .figma-mode {
@@ -278,6 +285,11 @@ button {
   flex: 0 0 auto;
 }
 
+.icon-btn img {
+  max-width: 22px;
+  max-height: 22px;
+}
+
 .icon-btn.ghost {
   visibility: hidden;
 }
@@ -334,6 +346,60 @@ button {
 .stack {
   display: grid;
   gap: 12px;
+}
+
+.banner-card {
+  min-height: 76px;
+  margin-bottom: 12px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.banner-card img {
+  width: 100%;
+  height: 92px;
+  object-fit: cover;
+  display: block;
+}
+
+.tournament-card {
+  min-height: 112px;
+  padding: 18px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  grid-template-columns: 1fr 52px;
+  gap: 14px;
+  align-items: center;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    url("./design-assets/Баннер турнира.svg") center / cover;
+}
+
+.tournament-card h2 {
+  margin: 4px 0 6px;
+  font-size: 24px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.tournament-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.tournament-card > span {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: #111;
+  background: var(--gold);
+  font-size: 20px;
+  font-weight: 900;
 }
 
 .card {
@@ -435,6 +501,12 @@ button {
   text-align: center;
 }
 
+.pick.wide {
+  width: 100%;
+  justify-self: stretch;
+  margin-bottom: 12px;
+}
+
 .mini-row {
   display: flex;
   justify-content: space-between;
@@ -445,6 +517,9 @@ button {
 
 .hero-card {
   padding: 18px;
+  margin-bottom: 12px;
+  background: rgba(22, 22, 22, 0.78);
+  backdrop-filter: blur(14px);
 }
 
 .detail-score {
@@ -566,6 +641,55 @@ button {
   gap: 10px;
 }
 
+.admin-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  overflow-x: auto;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-tabs button {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 11px;
+  white-space: nowrap;
+  color: var(--muted);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-tabs button.active {
+  color: #111;
+  background: var(--text);
+}
+
+.admin-menu {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-menu button {
+  min-height: 58px;
+  padding: 0 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-weight: 800;
+}
+
+.admin-menu b {
+  color: var(--muted);
+  font-size: 22px;
+}
+
 .admin-list {
   margin-top: 12px;
 }
@@ -668,6 +792,21 @@ button {
   z-index: 5;
 }
 
+.floating-action {
+  position: fixed;
+  left: 50%;
+  bottom: calc(94px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(340px, calc(100vw - 40px));
+  min-height: 48px;
+  border-radius: 14px;
+  color: #111;
+  background: var(--text);
+  font-weight: 900;
+  text-transform: uppercase;
+  z-index: 5;
+}
+
 .bottom-nav {
   position: fixed;
   left: 50%;
@@ -736,6 +875,10 @@ button {
   }
 
   .admin-row {
+    grid-template-columns: 1fr;
+  }
+
+  .tournament-card {
     grid-template-columns: 1fr;
   }
 }

@@ -10,29 +10,47 @@ if (tg) {
 const OWNER_IDS = ['713635428', '1043964303'];
 const REQUIRED_CHANNEL_URL = 'https://t.me/StandrankingSCS';
 const REQUIRED_CHANNEL_NAME = '@StandrankingSCS';
+
+// Для настоящей проверки подписки сюда нужен endpoint backend-а.
+// Backend должен проверить initData Telegram и вызвать Bot API getChatMember.
 const SUBSCRIPTION_CHECK_URL = '';
 
-const screenAssets = {
-  predictions: './design-assets/Mob 1 - List predicts.svg',
-  detail: './design-assets/Mob 2 - Predicts.svg',
-  profile: './design-assets/Mob 3 - Profile.svg',
-  admin: './design-assets/Mob 5 - Admin Panel.svg',
-  adminEdit: './design-assets/Mob 6 - Admin Panel.svg',
+const ASSETS = {
+  bg: './design-assets/Content.svg',
+  banner: './design-assets/Баннер турнира.svg',
+  menu: './design-assets/Меню.svg',
+  adminButton: './design-assets/Button admin.svg',
 };
 
 const icons = {
   trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H5a2 2 0 0 0 0 4h2"/><path d="M17 6h2a2 2 0 0 1 0 4h-2"/></svg>',
   chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-8"/></svg>',
   user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>',
-  menu: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>',
-  back: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
   plus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>',
+  edit: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  back: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+  trash: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
 };
+
+const seedTournaments = [
+  {
+    id: 't1',
+    title: 'Epic Championship',
+    subtitle: 'Главный турнир недели',
+    status: 'active',
+  },
+  {
+    id: 't2',
+    title: 'Major Qualifier',
+    subtitle: 'Отборочные матчи',
+    status: 'active',
+  },
+];
 
 const seedMatches = [
   {
-    id: 'p1',
-    league: 'Epic Champions',
+    id: 'm1',
+    tournamentId: 't1',
     teamA: 'Saints',
     teamB: 'Elevate',
     time: '18:00',
@@ -44,11 +62,11 @@ const seedMatches = [
     status: 'live',
     score: '1:1',
     result: 'Ожидается',
-    text: 'Elevate стабильнее играет поздние раунды и лучше закрывает карты после сильного старта. Риск основной ставки в первой карте, поэтому оптимальный вариант - общий исход матча.',
+    text: 'Elevate стабильнее играет поздние раунды и лучше закрывает карты после сильного старта.',
   },
   {
-    id: 'p2',
-    league: 'Premier League',
+    id: 'm2',
+    tournamentId: 't1',
     teamA: 'Saints',
     teamB: 'Vortex',
     time: '19:00',
@@ -60,11 +78,11 @@ const seedMatches = [
     status: 'open',
     score: '-',
     result: 'Не начался',
-    text: 'Обе команды часто размениваются картами, а личные встречи редко заканчиваются сухо. Для аккуратного входа лучше брать тотал, а не победителя.',
+    text: 'Обе команды часто размениваются картами, поэтому тотал выглядит надежнее выбора победителя.',
   },
   {
-    id: 'p3',
-    league: 'Major Qualifier',
+    id: 'm3',
+    tournamentId: 't2',
     teamA: 'Borz',
     teamB: 'Format',
     time: '21:00',
@@ -76,22 +94,24 @@ const seedMatches = [
     status: 'open',
     score: '-',
     result: 'Не начался',
-    text: 'Format хорошо держит свой пик и редко проваливается по экономике. Даже против фаворита команда выглядит достаточно надежно для плюсовой форы.',
+    text: 'Format хорошо держит свой пик и редко проваливается по экономике.',
   },
 ];
 
 const statusLabels = {
-  open: 'Open',
+  open: 'Открыт',
   live: 'Live',
-  finished: 'Done',
-  cancelled: 'Cancel',
+  finished: 'Завершен',
+  cancelled: 'Отмена',
 };
 
 const state = {
-  view: 'predictions',
-  filter: 'all',
-  selectedId: null,
-  editId: null,
+  view: 'tournaments',
+  selectedTournamentId: 't1',
+  selectedMatchId: null,
+  editTournamentId: null,
+  editMatchId: null,
+  adminSection: 'dashboard',
   toast: '',
   checkingSubscription: false,
 };
@@ -111,27 +131,35 @@ function readJson(key, fallback) {
   const saved = localStorage.getItem(key);
   if (!saved) {
     localStorage.setItem(key, JSON.stringify(fallback));
-    return fallback;
+    return structuredClone(fallback);
   }
 
   try {
     return JSON.parse(saved);
   } catch {
     localStorage.setItem(key, JSON.stringify(fallback));
-    return fallback;
+    return structuredClone(fallback);
   }
 }
 
+function saveJson(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function readTournaments() {
+  return readJson('tgapi.tournaments.v1', seedTournaments);
+}
+
+function saveTournaments(tournaments) {
+  saveJson('tgapi.tournaments.v1', tournaments);
+}
+
 function readMatches() {
-  return readJson('tgapi.matches.v2', seedMatches).map((match) => ({
-    score: '-',
-    result: 'Не начался',
-    ...match,
-  }));
+  return readJson('tgapi.matches.v3', seedMatches);
 }
 
 function saveMatches(matches) {
-  localStorage.setItem('tgapi.matches.v2', JSON.stringify(matches));
+  saveJson('tgapi.matches.v3', matches);
 }
 
 function readAdmins() {
@@ -139,7 +167,7 @@ function readAdmins() {
 }
 
 function saveAdmins(admins) {
-  localStorage.setItem('tgapi.admins', JSON.stringify(admins));
+  saveJson('tgapi.admins', admins);
 }
 
 function currentUser() {
@@ -185,13 +213,6 @@ function hasChannelAccess() {
   return localStorage.getItem('tgapi.channelVerified.v1') === 'true';
 }
 
-function setView(view, payload = {}) {
-  state.view = view;
-  state.selectedId = payload.id || null;
-  state.editId = payload.editId || null;
-  render();
-}
-
 function showToast(text) {
   state.toast = text;
   render();
@@ -199,6 +220,49 @@ function showToast(text) {
     state.toast = '';
     render();
   }, 1800);
+}
+
+function setView(view, payload = {}) {
+  state.view = view;
+  Object.assign(state, payload);
+  render();
+}
+
+function tournamentById(id) {
+  return readTournaments().find((item) => item.id === id) || readTournaments()[0];
+}
+
+function matchById(id) {
+  return readMatches().find((item) => item.id === id) || readMatches()[0];
+}
+
+function matchesForTournament(tournamentId) {
+  return readMatches().filter((match) => match.tournamentId === tournamentId);
+}
+
+function appFrame(content, nav = true) {
+  return `
+    <main class="screen app-bg">
+      ${content}
+    </main>
+    ${nav ? bottomNav() : ''}
+  `;
+}
+
+function topbar(title, options = {}) {
+  const { subtitle = 'Epic Champions', back = false, admin = true } = options;
+  return `
+    <header class="topbar">
+      <button class="icon-btn" data-action="${back ? 'back' : 'noop'}" aria-label="${back ? 'Назад' : 'Меню'}">
+        ${back ? icons.back : `<img src="${ASSETS.menu}" alt="" />`}
+      </button>
+      <div class="brand">
+        <div class="eyebrow">${escapeHtml(subtitle)}</div>
+        <h1 class="title">${escapeHtml(title)}</h1>
+      </div>
+      ${isAdmin() && admin ? `<button class="icon-btn" data-action="admin" aria-label="Админка">${icons.plus}</button>` : '<span class="icon-btn ghost"></span>'}
+    </header>
+  `;
 }
 
 function logo(team, big = false) {
@@ -212,42 +276,65 @@ function logo(team, big = false) {
   return `<div class="team-logo ${big ? 'big-logo' : ''}">${escapeHtml(initials || '?')}</div>`;
 }
 
-function topbar(title, eyebrow = 'Турнирные прогнозы', back = false) {
-  const adminButton = isAdmin()
-    ? `<button class="icon-btn" data-action="admin" aria-label="Админ-панель">${icons.plus}</button>`
-    : '<span class="icon-btn ghost"></span>';
-
-  return `
-    <header class="topbar">
-      <button class="icon-btn" data-action="${back ? 'back' : 'menu'}" aria-label="${back ? 'Назад' : 'Меню'}">
-        ${back ? icons.back : icons.menu}
+function renderSubscriptionGate() {
+  return appFrame(`
+    <section class="card hero-card gate-card">
+      <div class="eyebrow">Доступ к mini app</div>
+      <h1 class="title">Нужна подписка</h1>
+      <p class="text-block">Чтобы пользоваться приложением, подпишись на ${REQUIRED_CHANNEL_NAME}.</p>
+      <button class="action" data-action="open-channel">Открыть канал</button>
+      <button class="action secondary" data-action="confirm-subscription">
+        ${state.checkingSubscription ? 'Проверяем...' : 'Проверить подписку'}
       </button>
-      <div class="brand">
-        <div class="eyebrow">${escapeHtml(eyebrow)}</div>
-        <h1 class="title">${escapeHtml(title)}</h1>
-      </div>
-      ${adminButton}
-    </header>
-  `;
+      <p class="label">Обычный пользователь не пройдет дальше без серверной проверки подписки.</p>
+    </section>
+  `, false);
 }
 
-function figmaScreen(asset, overlay = '', classes = '') {
-  return `
-    <main class="screen figma-mode ${classes}">
-      <img class="figma-screen" src="${asset}" alt="" aria-hidden="true" />
-      <div class="figma-overlay">${overlay}</div>
-    </main>
-  `;
+function renderTournaments() {
+  const tournaments = readTournaments();
+
+  return appFrame(`
+    ${topbar('Турниры')}
+    <section class="banner-card">
+      <img src="${ASSETS.banner}" alt="Epic Championship" />
+    </section>
+    <section class="stack">
+      ${tournaments.map((tournament) => `
+        <article class="tournament-card" data-action="open-tournament" data-id="${escapeHtml(tournament.id)}">
+          <div>
+            <div class="eyebrow">${escapeHtml(tournament.status === 'active' ? 'Активный' : 'Архив')}</div>
+            <h2>${escapeHtml(tournament.title)}</h2>
+            <p>${escapeHtml(tournament.subtitle)}</p>
+          </div>
+          <span>${matchesForTournament(tournament.id).length}</span>
+        </article>
+      `).join('')}
+    </section>
+  `);
 }
 
-function predictionCard(match) {
+function renderTournament() {
+  const tournament = tournamentById(state.selectedTournamentId);
+  const matches = matchesForTournament(tournament.id);
+
+  return appFrame(`
+    ${topbar(tournament.title, { subtitle: tournament.subtitle, back: true })}
+    <section class="stack">
+      ${matches.length ? matches.map(matchCard).join('') : '<div class="card empty">Матчей пока нет.</div>'}
+    </section>
+    ${isAdmin() ? '<button class="floating-action" data-action="create-match">Дать предикт</button>' : ''}
+  `);
+}
+
+function matchCard(match) {
   return `
-    <article class="card match-card" data-action="open-prediction" data-id="${escapeHtml(match.id)}">
+    <article class="match-card card" data-action="open-match" data-id="${escapeHtml(match.id)}">
       <div class="match-head">
         ${logo(match.teamA)}
         <div class="match-teams">
           <span>${escapeHtml(match.teamA)}</span>
-          <b>vs</b>
+          <b>VS</b>
           <span>${escapeHtml(match.teamB)}</span>
         </div>
         <div class="status">${escapeHtml(statusLabels[match.status] || match.status)}</div>
@@ -260,7 +347,7 @@ function predictionCard(match) {
             <div class="value">${escapeHtml(match.time)}</div>
           </div>
           <div>
-            <div class="label">${escapeHtml(match.league)}</div>
+            <div class="label">Формат</div>
             <div class="value">${escapeHtml(match.format)}</div>
           </div>
           <div class="pick">${escapeHtml(match.pick)}</div>
@@ -274,125 +361,187 @@ function predictionCard(match) {
   `;
 }
 
-function renderSubscriptionGate() {
-  return `
-    <main class="screen gate-screen">
-      <section class="card hero-card gate-card">
-        <div class="eyebrow">Доступ к mini app</div>
-        <h1 class="title">Подпишись на канал</h1>
-        <p class="text-block">
-          Чтобы пользоваться приложением, нужна подписка на ${REQUIRED_CHANNEL_NAME}.
-        </p>
-        <button class="action" data-action="open-channel">Открыть канал</button>
-        <button class="action secondary" data-action="confirm-subscription">
-          ${state.checkingSubscription ? 'Проверяем...' : 'Я подписался'}
-        </button>
-        <p class="label">
-          В текущей статической версии GitHub Pages реальная проверка подписки требует backend с Bot API.
-        </p>
-      </section>
-    </main>
-  `;
-}
+function renderMatchDetail() {
+  const match = matchById(state.selectedMatchId);
+  const tournament = tournamentById(match.tournamentId);
 
-function renderPredictions() {
-  const matches = readMatches();
-  const items = matches.filter((item) => state.filter === 'all' || item.status === state.filter);
-
-  const first = items[0] || matches[0];
-
-  return figmaScreen(screenAssets.predictions, `
-    <button class="hotspot hs-admin" data-action="admin" aria-label="Админ-панель"></button>
-    <button class="hotspot hs-card-1" data-action="open-prediction" data-id="${escapeHtml(first?.id || '')}" aria-label="Открыть прогноз"></button>
-    <button class="hotspot hs-filter-all" data-filter="all" aria-label="Все"></button>
-    <button class="hotspot hs-filter-live" data-filter="live" aria-label="Live"></button>
-    <div class="live-data-pill">${escapeHtml(items.length)} матчей · ${escapeHtml(statusLabels[state.filter] || 'Все')}</div>
-    ${bottomNav()}
-  `);
-}
-
-function renderDetail() {
-  const match = readMatches().find((item) => item.id === state.selectedId) || readMatches()[0];
-
-  return figmaScreen(screenAssets.detail, `
-    <button class="hotspot hs-back" data-action="back" aria-label="Назад"></button>
-    <button class="hotspot hs-copy" data-action="copy-pick" aria-label="Скопировать прогноз"></button>
-    ${isAdmin() ? `<button class="hotspot hs-admin-detail" data-action="edit-match" data-id="${escapeHtml(match.id)}" aria-label="Редактировать"></button>` : ''}
-    <div class="asset-info-panel">
-      <strong>${escapeHtml(match.teamA)} vs ${escapeHtml(match.teamB)}</strong>
-      <span>${escapeHtml(match.pick)} · кф. ${escapeHtml(match.coefficient)}</span>
-      <span>Счет: ${escapeHtml(match.score)} · ${escapeHtml(match.result)}</span>
-    </div>
-    ${bottomNav()}
+  return appFrame(`
+    ${topbar('Прогноз', { subtitle: tournament.title, back: true })}
+    <section class="card hero-card">
+      <div class="detail-score">
+        <div class="detail-team">${logo(match.teamA, true)}<span>${escapeHtml(match.teamA)}</span></div>
+        <div class="versus">VS</div>
+        <div class="detail-team">${logo(match.teamB, true)}<span>${escapeHtml(match.teamB)}</span></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat"><strong>${escapeHtml(match.time)}</strong><span>${escapeHtml(match.date)}</span></div>
+        <div class="stat"><strong>${escapeHtml(match.coefficient)}</strong><span>Коэфф.</span></div>
+        <div class="stat"><strong>${escapeHtml(match.score)}</strong><span>Счет</span></div>
+      </div>
+    </section>
+    <section class="card hero-card detail-card">
+      <h2 class="section-title">Предикт</h2>
+      <div class="pick wide">${escapeHtml(match.pick)}</div>
+      <p class="text-block">${escapeHtml(match.text)}</p>
+      <p class="text-block"><strong>Результат:</strong> ${escapeHtml(match.result)}</p>
+      <button class="action" data-action="copy-pick">Скопировать</button>
+      ${isAdmin() ? `<button class="action secondary" data-action="edit-match" data-id="${escapeHtml(match.id)}">Изменить</button>` : ''}
+    </section>
   `);
 }
 
 function renderStats() {
+  const tournaments = readTournaments();
   const matches = readMatches();
   const live = matches.filter((item) => item.status === 'live').length;
   const finished = matches.filter((item) => item.status === 'finished').length;
 
-  return figmaScreen(screenAssets.detail, `
-    <button class="hotspot hs-back" data-action="back" aria-label="Назад"></button>
-    <div class="asset-info-panel stats-overlay">
-      <strong>Статистика</strong>
-      <span>${matches.length} матчей · ${live} live · ${finished} завершено</span>
-    </div>
-    ${bottomNav()}
+  return appFrame(`
+    ${topbar('Статистика')}
+    <section class="card hero-card">
+      <div class="stats-grid">
+        <div class="stat"><strong>${tournaments.length}</strong><span>Турниров</span></div>
+        <div class="stat"><strong>${matches.length}</strong><span>Матчей</span></div>
+        <div class="stat"><strong>${live}</strong><span>Live</span></div>
+      </div>
+    </section>
+    <section class="card hero-card">
+      <h2 class="section-title">Результаты</h2>
+      <div class="stats-grid">
+        <div class="stat"><strong>${finished}</strong><span>Завершено</span></div>
+        <div class="stat"><strong>${matches.length - finished}</strong><span>В работе</span></div>
+        <div class="stat"><strong>${readAdmins().length}</strong><span>Админов</span></div>
+      </div>
+    </section>
   `);
 }
 
 function renderProfile() {
   const user = currentUser();
 
-  return figmaScreen(screenAssets.profile, `
-    ${isAdmin() ? '<button class="hotspot hs-admin" data-action="admin" aria-label="Админ-панель"></button>' : ''}
-    <div class="asset-info-panel profile-overlay">
-      <strong>${escapeHtml(user.name)}</strong>
-      <span>ID: ${escapeHtml(user.id || 'нет данных')} · ${escapeHtml(user.username)}</span>
-      <span>${isOwner() ? 'Главный админ' : isAdmin() ? 'Админ' : 'Пользователь'}</span>
-    </div>
-    ${bottomNav()}
+  return appFrame(`
+    ${topbar('Профиль')}
+    <section class="card profile-card">
+      <div class="profile-head">
+        <div class="avatar">${escapeHtml(user.initials)}</div>
+        <div>
+          <div class="profile-name">${escapeHtml(user.name)}</div>
+          <div class="label">ID: ${escapeHtml(user.id || 'нет данных')}</div>
+          <div class="label">${escapeHtml(user.username)}</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat"><strong>${isOwner() ? 'Owner' : isAdmin() ? 'Admin' : 'User'}</strong><span>Роль</span></div>
+        <div class="stat"><strong>${readTournaments().length}</strong><span>Турниров</span></div>
+        <div class="stat"><strong>${readMatches().length}</strong><span>Матчей</span></div>
+      </div>
+      ${isAdmin() ? '<button class="action" data-action="admin">Админ-панель</button>' : ''}
+    </section>
   `);
 }
 
-function matchForm(match = {}) {
+function adminNav() {
+  const sections = [
+    ['dashboard', 'Главное'],
+    ['tournaments', 'Турниры'],
+    ['matches', 'Матчи'],
+    ['admins', 'Админы'],
+  ];
+
   return `
-    <form class="card hero-card admin-grid" id="matchForm">
-      <input type="hidden" name="id" value="${escapeHtml(match.id || '')}" />
-      <label class="field"><span>Турнир</span><input name="league" value="${escapeHtml(match.league || 'Epic Champions')}" required /></label>
-      <label class="field"><span>Команда 1</span><input name="teamA" value="${escapeHtml(match.teamA || 'Saints')}" required /></label>
-      <label class="field"><span>Команда 2</span><input name="teamB" value="${escapeHtml(match.teamB || 'Elevate')}" required /></label>
-      <label class="field"><span>Дата</span><input name="date" value="${escapeHtml(match.date || 'Сегодня')}" required /></label>
-      <label class="field"><span>Время</span><input name="time" value="${escapeHtml(match.time || '20:00')}" required /></label>
-      <label class="field"><span>Формат</span><input name="format" value="${escapeHtml(match.format || 'BO3')}" required /></label>
-      <label class="field"><span>Ставка</span><input name="pick" value="${escapeHtml(match.pick || 'Победа Elevate')}" required /></label>
-      <label class="field"><span>Коэффициент</span><input name="coefficient" value="${escapeHtml(match.coefficient || '1.95')}" required /></label>
-      <label class="field"><span>Уверенность, %</span><input name="confidence" type="number" min="0" max="100" value="${escapeHtml(match.confidence || 70)}" required /></label>
+    <div class="admin-tabs">
+      ${sections.map(([id, label]) => `<button class="${state.adminSection === id ? 'active' : ''}" data-action="admin-section" data-section="${id}">${label}</button>`).join('')}
+    </div>
+  `;
+}
+
+function renderAdmin() {
+  if (!isAdmin()) {
+    return appFrame(`
+      ${topbar('Нет доступа', { back: true, admin: false })}
+      <section class="card hero-card"><p class="text-block">Этот раздел доступен только администраторам.</p></section>
+    `);
+  }
+
+  const content = {
+    dashboard: renderAdminDashboard,
+    tournaments: renderAdminTournaments,
+    matches: renderAdminMatches,
+    admins: renderAdminAdmins,
+  }[state.adminSection]();
+
+  return appFrame(`
+    ${topbar('Админка', { subtitle: isOwner() ? 'Главный админ' : 'Админ', back: true, admin: false })}
+    ${adminNav()}
+    ${content}
+  `);
+}
+
+function renderAdminDashboard() {
+  return `
+    <section class="admin-menu">
+      <button data-action="admin-section" data-section="tournaments"><span>Список турниров</span><b>›</b></button>
+      <button data-action="admin-section" data-section="matches"><span>Создание и изменение матчей</span><b>›</b></button>
+      ${isOwner() ? '<button data-action="admin-section" data-section="admins"><span>Список админов</span><b>›</b></button>' : ''}
+    </section>
+  `;
+}
+
+function renderAdminTournaments() {
+  const tournaments = readTournaments();
+  const edit = state.editTournamentId ? tournaments.find((item) => item.id === state.editTournamentId) : null;
+
+  return `
+    ${tournamentForm(edit)}
+    <section class="card hero-card admin-list">
+      <h2 class="section-title">Турниры</h2>
+      ${tournaments.map((tournament) => `
+        <div class="admin-row">
+          <div>
+            <strong>${escapeHtml(tournament.title)}</strong>
+            <span>${escapeHtml(tournament.subtitle)} · ${escapeHtml(tournament.status)}</span>
+          </div>
+          <div class="row-actions">
+            <button class="mini-btn" data-action="edit-tournament" data-id="${escapeHtml(tournament.id)}">Изм.</button>
+            <button class="mini-btn danger" data-action="delete-tournament" data-id="${escapeHtml(tournament.id)}">Удалить</button>
+          </div>
+        </div>
+      `).join('')}
+    </section>
+  `;
+}
+
+function tournamentForm(tournament = null) {
+  return `
+    <form class="card hero-card admin-grid" id="tournamentForm">
+      <input type="hidden" name="id" value="${escapeHtml(tournament?.id || '')}" />
+      <label class="field"><span>Название турнира</span><input name="title" value="${escapeHtml(tournament?.title || '')}" placeholder="Epic Championship" required /></label>
+      <label class="field"><span>Описание</span><input name="subtitle" value="${escapeHtml(tournament?.subtitle || '')}" placeholder="Главный турнир недели" required /></label>
       <label class="field"><span>Статус</span>
         <select name="status">
-          ${Object.entries(statusLabels).map(([value, label]) => `<option value="${value}" ${match.status === value ? 'selected' : ''}>${label}</option>`).join('')}
+          <option value="active" ${tournament?.status === 'active' ? 'selected' : ''}>active</option>
+          <option value="archived" ${tournament?.status === 'archived' ? 'selected' : ''}>archived</option>
         </select>
       </label>
-      <label class="field"><span>Счет</span><input name="score" value="${escapeHtml(match.score || '-')}" required /></label>
-      <label class="field"><span>Результат матча</span><input name="result" value="${escapeHtml(match.result || 'Не начался')}" required /></label>
-      <label class="field"><span>Комментарий</span><textarea name="text" required>${escapeHtml(match.text || 'Короткое объяснение прогноза для пользователя.')}</textarea></label>
-      <button class="action" type="submit">${match.id ? 'Сохранить матч' : 'Создать матч'}</button>
-      ${match.id ? '<button class="action secondary" type="button" data-action="new-match">Создать новый</button>' : ''}
+      <button class="action" type="submit">${tournament ? 'Сохранить турнир' : 'Создать турнир'}</button>
+      ${tournament ? '<button class="action secondary" type="button" data-action="new-tournament">Новый турнир</button>' : ''}
     </form>
   `;
 }
 
-function adminList() {
+function renderAdminMatches() {
   const matches = readMatches();
+  const edit = state.editMatchId ? matches.find((item) => item.id === state.editMatchId) : null;
+
   return `
+    ${matchForm(edit)}
     <section class="card hero-card admin-list">
       <h2 class="section-title">Матчи</h2>
       ${matches.map((match) => `
         <div class="admin-row">
           <div>
             <strong>${escapeHtml(match.teamA)} vs ${escapeHtml(match.teamB)}</strong>
-            <span>${escapeHtml(match.status)} · ${escapeHtml(match.score)} · ${escapeHtml(match.result)}</span>
+            <span>${escapeHtml(tournamentById(match.tournamentId).title)} · ${escapeHtml(match.score)} · ${escapeHtml(match.result)}</span>
           </div>
           <div class="row-actions">
             <button class="mini-btn" data-action="edit-match" data-id="${escapeHtml(match.id)}">Изм.</button>
@@ -404,29 +553,57 @@ function adminList() {
   `;
 }
 
-function adminManager() {
-  if (!isOwner()) return '';
+function matchForm(match = null) {
+  const tournaments = readTournaments();
+  const selectedTournamentId = match?.tournamentId || state.selectedTournamentId || tournaments[0]?.id;
+
+  return `
+    <form class="card hero-card admin-grid" id="matchForm">
+      <input type="hidden" name="id" value="${escapeHtml(match?.id || '')}" />
+      <label class="field"><span>Турнир</span>
+        <select name="tournamentId" required>
+          ${tournaments.map((tournament) => `<option value="${escapeHtml(tournament.id)}" ${selectedTournamentId === tournament.id ? 'selected' : ''}>${escapeHtml(tournament.title)}</option>`).join('')}
+        </select>
+      </label>
+      <label class="field"><span>Команда 1</span><input name="teamA" value="${escapeHtml(match?.teamA || '')}" placeholder="Saints" required /></label>
+      <label class="field"><span>Команда 2</span><input name="teamB" value="${escapeHtml(match?.teamB || '')}" placeholder="Elevate" required /></label>
+      <label class="field"><span>Дата</span><input name="date" value="${escapeHtml(match?.date || 'Сегодня')}" required /></label>
+      <label class="field"><span>Время</span><input name="time" value="${escapeHtml(match?.time || '20:00')}" required /></label>
+      <label class="field"><span>Формат</span><input name="format" value="${escapeHtml(match?.format || 'BO3')}" required /></label>
+      <label class="field"><span>Предикт</span><input name="pick" value="${escapeHtml(match?.pick || '')}" placeholder="Победа Elevate" required /></label>
+      <label class="field"><span>Коэффициент</span><input name="coefficient" value="${escapeHtml(match?.coefficient || '1.95')}" required /></label>
+      <label class="field"><span>Уверенность, %</span><input name="confidence" type="number" min="0" max="100" value="${escapeHtml(match?.confidence || 70)}" required /></label>
+      <label class="field"><span>Статус</span>
+        <select name="status">
+          ${Object.keys(statusLabels).map((value) => `<option value="${value}" ${match?.status === value ? 'selected' : ''}>${statusLabels[value]}</option>`).join('')}
+        </select>
+      </label>
+      <label class="field"><span>Счет</span><input name="score" value="${escapeHtml(match?.score || '-')}" required /></label>
+      <label class="field"><span>Результат</span><input name="result" value="${escapeHtml(match?.result || 'Не начался')}" required /></label>
+      <label class="field"><span>Описание</span><textarea name="text" required>${escapeHtml(match?.text || '')}</textarea></label>
+      <button class="action" type="submit">${match ? 'Сохранить матч' : 'Дать предикт'}</button>
+      ${match ? '<button class="action secondary" type="button" data-action="new-match">Новый матч</button>' : ''}
+    </form>
+  `;
+}
+
+function renderAdminAdmins() {
+  if (!isOwner()) {
+    return '<section class="card hero-card"><p class="text-block">Админов может менять только главный админ.</p></section>';
+  }
 
   const admins = readAdmins();
   return `
     <section class="card hero-card admin-grid">
-      <h2 class="section-title">Админы</h2>
-      <div class="admin-row">
-        <div>
-          <strong>Главные админы</strong>
-          <span>ID: ${OWNER_IDS.join(', ')}</span>
-        </div>
-      </div>
+      <h2 class="section-title">Главные админы</h2>
+      <div class="admin-row"><div><strong>ID</strong><span>${OWNER_IDS.join(', ')}</span></div></div>
       <form class="admin-inline" id="adminForm">
         <label class="field"><span>@username или ID пользователя</span><input name="admin" placeholder="@username или 123456789" required /></label>
         <button class="action" type="submit">Добавить админа</button>
       </form>
       ${admins.length ? admins.map((admin) => `
         <div class="admin-row">
-          <div>
-            <strong>${admin.type === 'id' ? 'ID' : 'Username'}</strong>
-            <span>${escapeHtml(admin.value)}</span>
-          </div>
+          <div><strong>${admin.type === 'id' ? 'ID' : 'Username'}</strong><span>${escapeHtml(admin.value)}</span></div>
           <button class="mini-btn danger" data-action="remove-admin" data-admin="${escapeHtml(admin.value)}">Удалить</button>
         </div>
       `).join('') : '<div class="empty">Дополнительных админов пока нет.</div>'}
@@ -434,37 +611,9 @@ function adminManager() {
   `;
 }
 
-function renderAdmin() {
-  if (!isAdmin()) {
-    return figmaScreen(screenAssets.admin, `
-        <button class="hotspot hs-back" data-action="back" aria-label="Назад"></button>
-        <section class="card hero-card admin-floating-card">
-          <p class="text-block">Этот раздел доступен только владельцу и администраторам.</p>
-        </section>
-        ${bottomNav()}
-      `);
-  }
-
-  const editMatch = state.editId ? readMatches().find((match) => match.id === state.editId) : null;
-
-  return figmaScreen(editMatch ? screenAssets.adminEdit : screenAssets.admin, `
-    <button class="hotspot hs-back" data-action="back" aria-label="Назад"></button>
-    <section class="admin-asset-panel">
-      <div class="admin-panel-head">
-        <span>${isOwner() ? 'Главный админ' : 'Админ'}</span>
-        <strong>${editMatch ? 'Изменение матча' : 'Управление матчами'}</strong>
-      </div>
-      ${matchForm(editMatch || {})}
-      ${adminList()}
-      ${adminManager()}
-    </section>
-    ${bottomNav()}
-  `, 'admin-asset-screen');
-}
-
 function bottomNav() {
   const nav = [
-    ['predictions', 'Турниры', icons.trophy],
+    ['tournaments', 'Турниры', icons.trophy],
     ['stats', 'Статистика', icons.chart],
     ['profile', 'Профиль', icons.user],
   ];
@@ -486,14 +635,15 @@ function render() {
     app.innerHTML = renderSubscriptionGate();
   } else {
     const routes = {
-      predictions: renderPredictions,
-      detail: renderDetail,
+      tournaments: renderTournaments,
+      tournament: renderTournament,
+      match: renderMatchDetail,
       stats: renderStats,
       profile: renderProfile,
       admin: renderAdmin,
     };
 
-    app.innerHTML = routes[state.view]();
+    app.innerHTML = (routes[state.view] || renderTournaments)();
   }
 
   if (state.toast) {
@@ -531,16 +681,9 @@ async function verifySubscription() {
 document.addEventListener('click', async (event) => {
   const viewButton = event.target.closest('[data-view]');
   const actionButton = event.target.closest('[data-action]');
-  const filterButton = event.target.closest('[data-filter]');
 
   if (viewButton) {
     setView(viewButton.dataset.view);
-    return;
-  }
-
-  if (filterButton) {
-    state.filter = filterButton.dataset.filter;
-    render();
     return;
   }
 
@@ -549,21 +692,36 @@ document.addEventListener('click', async (event) => {
   const action = actionButton.dataset.action;
   const id = actionButton.dataset.id;
 
+  if (action === 'noop') return;
   if (action === 'open-channel') {
     if (tg?.openTelegramLink) tg.openTelegramLink(REQUIRED_CHANNEL_URL);
     else window.open(REQUIRED_CHANNEL_URL, '_blank', 'noopener');
   }
-
   if (action === 'confirm-subscription') verifySubscription();
-  if (action === 'open-prediction') setView('detail', { id });
-  if (action === 'back') setView('predictions');
-  if (action === 'admin' || action === 'menu') setView('admin');
-  if (action === 'new-match') setView('admin');
-  if (action === 'edit-match') setView('admin', { editId: id });
+  if (action === 'back') {
+    if (state.view === 'match') setView('tournament');
+    else setView('tournaments');
+  }
+  if (action === 'admin') setView('admin', { adminSection: 'dashboard' });
+  if (action === 'admin-section') setView('admin', { adminSection: actionButton.dataset.section });
+  if (action === 'open-tournament') setView('tournament', { selectedTournamentId: id });
+  if (action === 'open-match') setView('match', { selectedMatchId: id });
+  if (action === 'create-match') setView('admin', { adminSection: 'matches', editMatchId: null });
+  if (action === 'edit-match') setView('admin', { adminSection: 'matches', editMatchId: id });
+  if (action === 'new-match') setView('admin', { adminSection: 'matches', editMatchId: null });
+  if (action === 'edit-tournament') setView('admin', { adminSection: 'tournaments', editTournamentId: id });
+  if (action === 'new-tournament') setView('admin', { adminSection: 'tournaments', editTournamentId: null });
 
   if (action === 'delete-match' && isAdmin()) {
     saveMatches(readMatches().filter((match) => match.id !== id));
     showToast('Матч удален');
+  }
+
+  if (action === 'delete-tournament' && isAdmin()) {
+    const tournaments = readTournaments().filter((item) => item.id !== id);
+    saveTournaments(tournaments);
+    saveMatches(readMatches().filter((match) => match.tournamentId !== id));
+    showToast('Турнир удален');
   }
 
   if (action === 'remove-admin' && isOwner()) {
@@ -572,19 +730,10 @@ document.addEventListener('click', async (event) => {
     showToast('Админ удален');
   }
 
-  if (action === 'reset') {
-    saveMatches(seedMatches);
-    saveAdmins([]);
-    localStorage.removeItem('tgapi.channelConfirmed');
-    localStorage.removeItem('tgapi.channelVerified.v1');
-    showToast('Demo-данные сброшены');
-  }
-
   if (action === 'copy-pick') {
-    const match = readMatches().find((item) => item.id === state.selectedId);
-    const text = `${match.teamA} vs ${match.teamB}: ${match.pick}, кф. ${match.coefficient}`;
-    await navigator.clipboard?.writeText(text);
-    showToast('Прогноз скопирован');
+    const match = matchById(state.selectedMatchId);
+    await navigator.clipboard?.writeText(`${match.teamA} vs ${match.teamB}: ${match.pick}, кф. ${match.coefficient}`);
+    showToast('Предикт скопирован');
   }
 });
 
@@ -605,7 +754,28 @@ document.addEventListener('submit', (event) => {
       admins.push(admin);
       saveAdmins(admins);
     }
+    event.target.reset();
     showToast('Админ добавлен');
+  }
+
+  if (event.target.id === 'tournamentForm') {
+    event.preventDefault();
+    if (!isAdmin()) return;
+
+    const data = Object.fromEntries(new FormData(event.target).entries());
+    const tournaments = readTournaments();
+    const tournament = {
+      id: data.id || `t${Date.now()}`,
+      title: data.title,
+      subtitle: data.subtitle,
+      status: data.status,
+    };
+    const index = tournaments.findIndex((item) => item.id === tournament.id);
+    if (index >= 0) tournaments[index] = tournament;
+    else tournaments.unshift(tournament);
+    saveTournaments(tournaments);
+    state.editTournamentId = null;
+    showToast(index >= 0 ? 'Турнир сохранен' : 'Турнир создан');
   }
 
   if (event.target.id === 'matchForm') {
@@ -615,8 +785,8 @@ document.addEventListener('submit', (event) => {
     const data = Object.fromEntries(new FormData(event.target).entries());
     const matches = readMatches();
     const match = {
-      id: data.id || `p${Date.now()}`,
-      league: data.league,
+      id: data.id || `m${Date.now()}`,
+      tournamentId: data.tournamentId,
       teamA: data.teamA,
       teamB: data.teamB,
       time: data.time,
@@ -630,14 +800,13 @@ document.addEventListener('submit', (event) => {
       result: data.result,
       text: data.text,
     };
-
     const index = matches.findIndex((item) => item.id === match.id);
     if (index >= 0) matches[index] = match;
     else matches.unshift(match);
-
     saveMatches(matches);
-    state.editId = null;
-    showToast(index >= 0 ? 'Матч сохранен' : 'Матч создан');
+    state.editMatchId = null;
+    state.selectedTournamentId = match.tournamentId;
+    showToast(index >= 0 ? 'Матч сохранен' : 'Предикт создан');
   }
 });
 
