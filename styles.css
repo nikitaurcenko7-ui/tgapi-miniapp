@@ -94,6 +94,10 @@ button {
   flex: 0 0 auto;
 }
 
+.icon-btn.ghost {
+  visibility: hidden;
+}
+
 .icon {
   width: 22px;
   height: 22px;
@@ -247,6 +251,14 @@ button {
   text-align: center;
 }
 
+.mini-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .hero-card {
   padding: 18px;
 }
@@ -370,6 +382,64 @@ button {
   gap: 10px;
 }
 
+.admin-list {
+  margin-top: 12px;
+}
+
+.admin-row {
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin-row:first-of-type {
+  border-top: 0;
+}
+
+.admin-row strong,
+.admin-row span {
+  display: block;
+}
+
+.admin-row strong {
+  font-size: 13px;
+}
+
+.admin-row span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.mini-btn {
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--panel-strong);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mini-btn.danger {
+  color: #111;
+  background: var(--red);
+}
+
+.admin-inline {
+  display: grid;
+  gap: 10px;
+}
+
 .field {
   display: grid;
   gap: 6px;
@@ -456,6 +526,16 @@ button {
   text-align: center;
 }
 
+.gate-screen {
+  display: grid;
+  align-items: center;
+}
+
+.gate-card {
+  display: grid;
+  gap: 12px;
+}
+
 @media (max-width: 360px) {
   .screen {
     padding-left: 16px;
@@ -469,5 +549,9 @@ button {
   .pick {
     grid-column: 1 / -1;
     justify-self: stretch;
+  }
+
+  .admin-row {
+    grid-template-columns: 1fr;
   }
 }
