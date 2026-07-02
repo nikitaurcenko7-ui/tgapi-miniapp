@@ -20,6 +20,9 @@ const ASSETS = {
   banner: './design-assets/Баннер турнира.svg',
   menu: './design-assets/Меню.svg',
   adminButton: './design-assets/Button admin.svg',
+  adminHeader: './Верхняя плажка.svg',
+  adminSubtitle: './ГЛАВНОЕ МЕНЮ.svg',
+  adminMenu: './Frame 546.svg',
 };
 
 const icons = {
@@ -115,6 +118,11 @@ const state = {
   toast: '',
   checkingSubscription: false,
 };
+
+const initialView = new URLSearchParams(window.location.search).get('view');
+if (['tournaments', 'tournament', 'match', 'stats', 'profile', 'admin'].includes(initialView)) {
+  state.view = initialView;
+}
 
 const app = document.querySelector('#app');
 
@@ -240,9 +248,9 @@ function matchesForTournament(tournamentId) {
   return readMatches().filter((match) => match.tournamentId === tournamentId);
 }
 
-function appFrame(content, nav = true) {
+function appFrame(content, nav = true, className = '') {
   return `
-    <main class="screen app-bg">
+    <main class="screen app-bg ${className}">
       ${content}
     </main>
     ${nav ? bottomNav() : ''}
@@ -265,6 +273,15 @@ function topbar(title, options = {}) {
   `;
 }
 
+function adminHeader() {
+  return `
+    <header class="admin-header">
+      <img src="${ASSETS.adminHeader}" alt="Админ панель" />
+      <img class="admin-subtitle" src="${ASSETS.adminSubtitle}" alt="${isOwner() ? 'Главное меню' : 'Меню админа'}" />
+    </header>
+  `;
+}
+
 function logo(team, big = false) {
   const initials = String(team)
     .split(/\s+/)
@@ -278,15 +295,16 @@ function logo(team, big = false) {
 
 function renderSubscriptionGate() {
   return appFrame(`
-    <section class="card hero-card gate-card">
+    <section class="gate-card">
+      <div class="gate-logo">S</div>
       <div class="eyebrow">Доступ к mini app</div>
       <h1 class="title">Нужна подписка</h1>
-      <p class="text-block">Чтобы пользоваться приложением, подпишись на ${REQUIRED_CHANNEL_NAME}.</p>
+      <p class="text-block">Подпишись на ${REQUIRED_CHANNEL_NAME}, затем вернись и нажми проверку.</p>
       <button class="action" data-action="open-channel">Открыть канал</button>
       <button class="action secondary" data-action="confirm-subscription">
         ${state.checkingSubscription ? 'Проверяем...' : 'Проверить подписку'}
       </button>
-      <p class="label">Обычный пользователь не пройдет дальше без серверной проверки подписки.</p>
+      <p class="label">В статичной версии доступ подтверждается локально. Настоящая проверка подключается через backend.</p>
     </section>
   `, false);
 }
@@ -471,18 +489,21 @@ function renderAdmin() {
   }[state.adminSection]();
 
   return appFrame(`
-    ${topbar('Админка', { subtitle: isOwner() ? 'Главный админ' : 'Админ', back: true, admin: false })}
-    ${adminNav()}
+    ${adminHeader()}
+    ${state.adminSection === 'dashboard' ? '' : adminNav()}
     ${content}
-  `);
+  `, true, 'admin-screen');
 }
 
 function renderAdminDashboard() {
   return `
-    <section class="admin-menu">
-      <button data-action="admin-section" data-section="tournaments"><span>Список турниров</span><b>›</b></button>
-      <button data-action="admin-section" data-section="matches"><span>Создание и изменение матчей</span><b>›</b></button>
-      ${isOwner() ? '<button data-action="admin-section" data-section="admins"><span>Список админов</span><b>›</b></button>' : ''}
+    <section class="admin-menu-asset">
+      <img src="${ASSETS.adminMenu}" alt="Главное меню" />
+      <button class="admin-hit hit-1" data-action="admin-section" data-section="tournaments" aria-label="Список турниров и матчей"></button>
+      ${isOwner() ? '<button class="admin-hit hit-2" data-action="admin-section" data-section="admins" aria-label="Список админов"></button>' : ''}
+      <button class="admin-hit hit-3" data-action="admin-section" data-section="matches" aria-label="Базы данных"></button>
+      <button class="admin-hit hit-4" data-action="admin-section" data-section="matches" aria-label="Создание пич"></button>
+      <button class="admin-hit hit-5" data-action="admin-section" data-section="matches" aria-label="Рассылки"></button>
     </section>
   `;
 }
@@ -653,7 +674,8 @@ function render() {
 
 async function verifySubscription() {
   if (!SUBSCRIPTION_CHECK_URL) {
-    showToast('Нужен сервер проверки подписки');
+    localStorage.setItem('tgapi.channelVerified.v1', 'true');
+    showToast('Доступ открыт');
     return;
   }
 
