@@ -7,10 +7,18 @@ if (tg) {
   tg.setBackgroundColor('#0e0e0e');
 }
 
-const OWNER_ID = '713635428';
+const OWNER_IDS = ['713635428', '1043964303'];
 const REQUIRED_CHANNEL_URL = 'https://t.me/StandrankingSCS';
 const REQUIRED_CHANNEL_NAME = '@StandrankingSCS';
 const SUBSCRIPTION_CHECK_URL = '';
+
+const screenAssets = {
+  predictions: './design-assets/Mob 1 - List predicts.svg',
+  detail: './design-assets/Mob 2 - Predicts.svg',
+  profile: './design-assets/Mob 3 - Profile.svg',
+  admin: './design-assets/Mob 5 - Admin Panel.svg',
+  adminEdit: './design-assets/Mob 6 - Admin Panel.svg',
+};
 
 const icons = {
   trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H5a2 2 0 0 0 0 4h2"/><path d="M17 6h2a2 2 0 0 1 0 4h-2"/></svg>',
@@ -115,7 +123,7 @@ function readJson(key, fallback) {
 }
 
 function readMatches() {
-  return readJson('tgapi.predictions', seedMatches).map((match) => ({
+  return readJson('tgapi.matches.v2', seedMatches).map((match) => ({
     score: '-',
     result: 'Не начался',
     ...match,
@@ -123,7 +131,7 @@ function readMatches() {
 }
 
 function saveMatches(matches) {
-  localStorage.setItem('tgapi.predictions', JSON.stringify(matches));
+  localStorage.setItem('tgapi.matches.v2', JSON.stringify(matches));
 }
 
 function readAdmins() {
@@ -157,14 +165,14 @@ function normalizeAdminValue(value) {
 }
 
 function isOwner() {
-  return currentUser().id === OWNER_ID;
+  return OWNER_IDS.includes(currentUser().id);
 }
 
 function isAdmin() {
   const user = currentUser();
   const username = user.username.toLowerCase();
 
-  if (user.id === OWNER_ID) return true;
+  if (OWNER_IDS.includes(user.id)) return true;
   return readAdmins().some((admin) => {
     if (admin.type === 'id') return admin.value === user.id;
     if (admin.type === 'username') return admin.value === username;
@@ -173,8 +181,8 @@ function isAdmin() {
 }
 
 function hasChannelAccess() {
-  if (isOwner()) return true;
-  return localStorage.getItem('tgapi.channelConfirmed') === 'true';
+  if (isAdmin()) return true;
+  return localStorage.getItem('tgapi.channelVerified.v1') === 'true';
 }
 
 function setView(view, payload = {}) {
@@ -220,6 +228,15 @@ function topbar(title, eyebrow = 'Турнирные прогнозы', back = f
       </div>
       ${adminButton}
     </header>
+  `;
+}
+
+function figmaScreen(asset, overlay = '', classes = '') {
+  return `
+    <main class="screen figma-mode ${classes}">
+      <img class="figma-screen" src="${asset}" alt="" aria-hidden="true" />
+      <div class="figma-overlay">${overlay}</div>
+    </main>
   `;
 }
 
@@ -282,54 +299,32 @@ function renderPredictions() {
   const matches = readMatches();
   const items = matches.filter((item) => state.filter === 'all' || item.status === state.filter);
 
-  return `
-    <main class="screen">
-      ${topbar('Epic Champions')}
-      <div class="banner">
-        <img src="./design-assets/Баннер турнира.svg" alt="Epic Champions" />
-      </div>
-      <div class="tabs">
-        <button class="tab ${state.filter === 'all' ? 'active' : ''}" data-filter="all">Все</button>
-        <button class="tab ${state.filter === 'live' ? 'active' : ''}" data-filter="live">Live</button>
-        <button class="tab ${state.filter === 'open' ? 'active' : ''}" data-filter="open">Открытые</button>
-      </div>
-      <section class="stack">
-        ${items.length ? items.map(predictionCard).join('') : '<div class="card empty">Матчей в этой вкладке пока нет.</div>'}
-      </section>
-    </main>
+  const first = items[0] || matches[0];
+
+  return figmaScreen(screenAssets.predictions, `
+    <button class="hotspot hs-admin" data-action="admin" aria-label="Админ-панель"></button>
+    <button class="hotspot hs-card-1" data-action="open-prediction" data-id="${escapeHtml(first?.id || '')}" aria-label="Открыть прогноз"></button>
+    <button class="hotspot hs-filter-all" data-filter="all" aria-label="Все"></button>
+    <button class="hotspot hs-filter-live" data-filter="live" aria-label="Live"></button>
+    <div class="live-data-pill">${escapeHtml(items.length)} матчей · ${escapeHtml(statusLabels[state.filter] || 'Все')}</div>
     ${bottomNav()}
-  `;
+  `);
 }
 
 function renderDetail() {
   const match = readMatches().find((item) => item.id === state.selectedId) || readMatches()[0];
 
-  return `
-    <main class="screen">
-      ${topbar('Прогноз', match.league, true)}
-      <section class="card hero-card">
-        <div class="detail-score">
-          <div class="detail-team">${logo(match.teamA, true)}<span>${escapeHtml(match.teamA)}</span></div>
-          <div class="versus">VS</div>
-          <div class="detail-team">${logo(match.teamB, true)}<span>${escapeHtml(match.teamB)}</span></div>
-        </div>
-        <div class="stats-grid">
-          <div class="stat"><strong>${escapeHtml(match.time)}</strong><span>${escapeHtml(match.date)}</span></div>
-          <div class="stat"><strong>${escapeHtml(match.coefficient)}</strong><span>Коэфф.</span></div>
-          <div class="stat"><strong>${escapeHtml(match.score)}</strong><span>Счет</span></div>
-        </div>
-      </section>
-      <section class="card hero-card" style="margin-top: 12px;">
-        <h2 class="section-title">Прогноз</h2>
-        <div class="pick" style="justify-self: stretch; margin-bottom: 12px;">${escapeHtml(match.pick)}</div>
-        <p class="text-block">${escapeHtml(match.text)}</p>
-        <p class="text-block"><strong>Результат:</strong> ${escapeHtml(match.result)}</p>
-        <button class="action" data-action="copy-pick">Скопировать прогноз</button>
-        ${isAdmin() ? `<button class="action secondary" data-action="edit-match" data-id="${escapeHtml(match.id)}">Редактировать</button>` : ''}
-      </section>
-    </main>
+  return figmaScreen(screenAssets.detail, `
+    <button class="hotspot hs-back" data-action="back" aria-label="Назад"></button>
+    <button class="hotspot hs-copy" data-action="copy-pick" aria-label="Скопировать прогноз"></button>
+    ${isAdmin() ? `<button class="hotspot hs-admin-detail" data-action="edit-match" data-id="${escapeHtml(match.id)}" aria-label="Редактировать"></button>` : ''}
+    <div class="asset-info-panel">
+      <strong>${escapeHtml(match.teamA)} vs ${escapeHtml(match.teamB)}</strong>
+      <span>${escapeHtml(match.pick)} · кф. ${escapeHtml(match.coefficient)}</span>
+      <span>Счет: ${escapeHtml(match.score)} · ${escapeHtml(match.result)}</span>
+    </div>
     ${bottomNav()}
-  `;
+  `);
 }
 
 function renderStats() {
@@ -337,51 +332,28 @@ function renderStats() {
   const live = matches.filter((item) => item.status === 'live').length;
   const finished = matches.filter((item) => item.status === 'finished').length;
 
-  return `
-    <main class="screen">
-      ${topbar('Статистика')}
-      <section class="card hero-card">
-        <h2 class="section-title">Общая сводка</h2>
-        <div class="stats-grid">
-          <div class="stat"><strong>${matches.length}</strong><span>Матчей</span></div>
-          <div class="stat"><strong>${live}</strong><span>Live</span></div>
-          <div class="stat"><strong>${finished}</strong><span>Завершено</span></div>
-        </div>
-      </section>
-      <section class="stack" style="margin-top: 12px;">
-        ${matches.slice(0, 3).map(predictionCard).join('')}
-      </section>
-    </main>
+  return figmaScreen(screenAssets.detail, `
+    <button class="hotspot hs-back" data-action="back" aria-label="Назад"></button>
+    <div class="asset-info-panel stats-overlay">
+      <strong>Статистика</strong>
+      <span>${matches.length} матчей · ${live} live · ${finished} завершено</span>
+    </div>
     ${bottomNav()}
-  `;
+  `);
 }
 
 function renderProfile() {
   const user = currentUser();
 
-  return `
-    <main class="screen">
-      ${topbar('Профиль')}
-      <section class="card profile-card">
-        <div class="profile-head">
-          <div class="avatar">${escapeHtml(user.initials)}</div>
-          <div>
-            <div class="profile-name">${escapeHtml(user.name)}</div>
-            <div class="label">ID: ${escapeHtml(user.id || 'нет данных')}</div>
-            <div class="label">${escapeHtml(user.username)}</div>
-          </div>
-        </div>
-        <div class="stats-grid">
-          <div class="stat"><strong>${isOwner() ? 'Owner' : isAdmin() ? 'Admin' : 'User'}</strong><span>Роль</span></div>
-          <div class="stat"><strong>${readMatches().length}</strong><span>Матчей</span></div>
-          <div class="stat"><strong>${readAdmins().length}</strong><span>Админов</span></div>
-        </div>
-        ${isAdmin() ? '<button class="action" data-action="admin">Админ-панель</button>' : ''}
-        <button class="action secondary" data-action="reset">Сбросить demo-данные</button>
-      </section>
-    </main>
+  return figmaScreen(screenAssets.profile, `
+    ${isAdmin() ? '<button class="hotspot hs-admin" data-action="admin" aria-label="Админ-панель"></button>' : ''}
+    <div class="asset-info-panel profile-overlay">
+      <strong>${escapeHtml(user.name)}</strong>
+      <span>ID: ${escapeHtml(user.id || 'нет данных')} · ${escapeHtml(user.username)}</span>
+      <span>${isOwner() ? 'Главный админ' : isAdmin() ? 'Админ' : 'Пользователь'}</span>
+    </div>
     ${bottomNav()}
-  `;
+  `);
 }
 
 function matchForm(match = {}) {
@@ -441,8 +413,8 @@ function adminManager() {
       <h2 class="section-title">Админы</h2>
       <div class="admin-row">
         <div>
-          <strong>Главный админ</strong>
-          <span>ID: ${OWNER_ID}</span>
+          <strong>Главные админы</strong>
+          <span>ID: ${OWNER_IDS.join(', ')}</span>
         </div>
       </div>
       <form class="admin-inline" id="adminForm">
@@ -464,28 +436,30 @@ function adminManager() {
 
 function renderAdmin() {
   if (!isAdmin()) {
-    return `
-      <main class="screen">
-        ${topbar('Нет доступа', 'Админ-панель', true)}
-        <section class="card hero-card">
+    return figmaScreen(screenAssets.admin, `
+        <button class="hotspot hs-back" data-action="back" aria-label="Назад"></button>
+        <section class="card hero-card admin-floating-card">
           <p class="text-block">Этот раздел доступен только владельцу и администраторам.</p>
         </section>
-      </main>
-      ${bottomNav()}
-    `;
+        ${bottomNav()}
+      `);
   }
 
   const editMatch = state.editId ? readMatches().find((match) => match.id === state.editId) : null;
 
-  return `
-    <main class="screen">
-      ${topbar('Админ', isOwner() ? 'Владелец' : 'Администратор', true)}
+  return figmaScreen(editMatch ? screenAssets.adminEdit : screenAssets.admin, `
+    <button class="hotspot hs-back" data-action="back" aria-label="Назад"></button>
+    <section class="admin-asset-panel">
+      <div class="admin-panel-head">
+        <span>${isOwner() ? 'Главный админ' : 'Админ'}</span>
+        <strong>${editMatch ? 'Изменение матча' : 'Управление матчами'}</strong>
+      </div>
       ${matchForm(editMatch || {})}
       ${adminList()}
       ${adminManager()}
-    </main>
+    </section>
     ${bottomNav()}
-  `;
+  `, 'admin-asset-screen');
 }
 
 function bottomNav() {
@@ -529,8 +503,7 @@ function render() {
 
 async function verifySubscription() {
   if (!SUBSCRIPTION_CHECK_URL) {
-    localStorage.setItem('tgapi.channelConfirmed', 'true');
-    showToast('Подписка отмечена');
+    showToast('Нужен сервер проверки подписки');
     return;
   }
 
@@ -545,7 +518,7 @@ async function verifySubscription() {
     });
     const data = await response.json();
     if (!data.subscribed) throw new Error('not_subscribed');
-    localStorage.setItem('tgapi.channelConfirmed', 'true');
+    localStorage.setItem('tgapi.channelVerified.v1', 'true');
     showToast('Подписка подтверждена');
   } catch {
     showToast('Подписка не подтверждена');
@@ -603,6 +576,7 @@ document.addEventListener('click', async (event) => {
     saveMatches(seedMatches);
     saveAdmins([]);
     localStorage.removeItem('tgapi.channelConfirmed');
+    localStorage.removeItem('tgapi.channelVerified.v1');
     showToast('Demo-данные сброшены');
   }
 

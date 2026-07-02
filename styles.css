@@ -54,6 +54,190 @@ button {
   padding: calc(18px + env(safe-area-inset-top)) 25px calc(104px + env(safe-area-inset-bottom));
 }
 
+.figma-mode {
+  min-height: 100vh;
+  padding: 0;
+  display: grid;
+  place-items: start center;
+  background: #0e0e0e;
+}
+
+.figma-screen {
+  width: min(100vw, 390px);
+  min-height: 100vh;
+  height: auto;
+  display: block;
+}
+
+.figma-overlay {
+  position: absolute;
+  inset: 0;
+  width: min(100vw, 390px);
+  min-height: 100vh;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.figma-overlay > * {
+  pointer-events: auto;
+}
+
+.hotspot {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+}
+
+.hs-back {
+  left: 18px;
+  top: 28px;
+  width: 54px;
+  height: 54px;
+}
+
+.hs-admin {
+  right: 18px;
+  top: 28px;
+  width: 54px;
+  height: 54px;
+}
+
+.hs-admin-detail {
+  right: 24px;
+  top: 104px;
+  width: 128px;
+  height: 42px;
+}
+
+.hs-card-1 {
+  left: 24px;
+  top: 154px;
+  width: calc(100% - 48px);
+  height: 116px;
+}
+
+.hs-filter-all {
+  left: 25px;
+  top: 104px;
+  width: 98px;
+  height: 38px;
+}
+
+.hs-filter-live {
+  left: 128px;
+  top: 104px;
+  width: 98px;
+  height: 38px;
+}
+
+.hs-copy {
+  left: 52%;
+  bottom: 112px;
+  width: 150px;
+  height: 48px;
+}
+
+.live-data-pill,
+.asset-info-panel {
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  background: rgba(14, 14, 14, 0.74);
+  backdrop-filter: blur(14px);
+  color: var(--text);
+}
+
+.live-data-pill {
+  top: 714px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.asset-info-panel {
+  bottom: 96px;
+  padding: 12px 14px;
+  display: grid;
+  gap: 5px;
+}
+
+.asset-info-panel strong,
+.asset-info-panel span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.asset-info-panel span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stats-overlay,
+.profile-overlay {
+  top: 110px;
+  bottom: auto;
+}
+
+.admin-asset-screen .figma-screen {
+  position: fixed;
+  inset: 0 auto auto 50%;
+  transform: translateX(-50%);
+}
+
+.admin-asset-panel {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 104px;
+  max-height: calc(100vh - 194px);
+  overflow: auto;
+  display: grid;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+
+.admin-panel-head {
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: var(--text);
+  background: rgba(14, 14, 14, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.admin-panel-head span,
+.admin-panel-head strong {
+  display: block;
+}
+
+.admin-panel-head span {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.admin-panel-head strong {
+  margin-top: 4px;
+  font-size: 18px;
+}
+
+.admin-floating-card {
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  top: 132px;
+  background: rgba(14, 14, 14, 0.82);
+  backdrop-filter: blur(14px);
+}
+
 .topbar {
   min-height: 58px;
   display: flex;
